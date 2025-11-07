@@ -6,49 +6,46 @@ import { fileURLToPath } from "url";
 import pkg from "pg";
 
 dotenv.config();
+
 const { Pool } = pkg;
 const app = express();
-
 app.use(cors());
 app.use(express.json());
 
-// Configuración rutas absolutas para producción (Render)
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Conexión a PostgreSQL
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: { rejectUnauthorized: false }
 });
 
-// 🔹 Ruta de prueba para verificar conexión
+// 🔹 Ruta de prueba
 app.get("/api/test", async (req, res) => {
   try {
     const result = await pool.query("SELECT NOW()");
     res.json({ status: "ok", time: result.rows[0] });
   } catch (error) {
-    console.error("❌ Error DB:", error);
+    console.error(error);
     res.status(500).json({ error: "Database connection failed" });
   }
 });
 
-// ✅ Ruta para guardar la encuesta
+// ✅ Guardar encuesta
 app.post("/api/encuestas", async (req, res) => {
-  try {
-    const {
-      ine,
-      first_initial,
-      last_initial,
-      mother_initial,
-      section,
-      cp,
-      birth_year,
-      sex,
-      answer
-    } = req.body;
+  const {
+    ine,
+    first_initial,
+    last_initial,
+    mother_initial,
+    section,
+    cp,
+    sex,
+    answer
+  } = req.body;
 
-    // 1️⃣ Insertar o buscar usuario
+  try {
+    // 1️⃣ Verificar si la persona ya existe
     let personResult = await pool.query(
       "SELECT id FROM persons WHERE identifier=$1",
       [ine]
@@ -56,61 +53,63 @@ app.post("/api/encuestas", async (req, res) => {
 
     let personId;
     if (personResult.rows.length === 0) {
+      // Insertar nueva persona
       const insertPerson = await pool.query(
-        `INSERT INTO persons
-          (identifier, first_initial, last_initial, mother_initial, section, cp, birth_year)
-         VALUES ($1,$2,$3,$4,$5,$6,$7)
-         RETURNING id`,
-        [ine, first_initial, last_initial, mother_initial, section, cp, birth_year]
+        "INSERT INTO persons (identifier, first_initial, last_initial, mother_initial, section, cp) VALUES ($1,$2,$3,$4,$5,$6) RETURNING id",
+        [ine, first_initial, last_initial, mother_initial, section, cp]
       );
       personId = insertPerson.rows[0].id;
     } else {
       personId = personResult.rows[0].id;
     }
 
-    // 2️⃣ Obtener encuesta activa
+    // 2️⃣ Crear respuesta en responses (encuesta "única")
     const surveyResult = await pool.query(
-      "SELECT id FROM surveys WHERE title=$1 AND active=true LIMIT 1",
-      ["¿Quieres que siga el presidente municipal?"]
+      "SELECT id FROM surveys WHERE title='Presidente Municipal' LIMIT 1"
     );
 
+    let surveyId;
     if (surveyResult.rows.length === 0) {
-      return res.status(400).json({ error: "Encuesta no encontrada" });
-    }
-    const surveyId = surveyResult.rows[0].id;
+      // Crear encuesta si no existe
+      const insertSurvey = await pool.query(
+        "INSERT INTO surveys (title, description, active) VALUES ($1,$2,$3) RETURNING id",
+        ["Presidente Municipal", "Encuesta sobre el presidente municipal", true]
+      );
+      surveyId = insertSurvey.rows[0].id;
 
-    // 3️⃣ Crear respuesta
-    const responseResult = await pool.query(
+      // Crear pregunta
+      await pool.query(
+        "INSERT INTO questions (survey_id, type, text, required, position) VALUES ($1,$2,$3,$4,$5)",
+        [surveyId, "single-choice", "¿Quieres que siga el presidente municipal?", true, 0]
+      );
+    } else {
+      surveyId = surveyResult.rows[0].id;
+    }
+
+    // Insertar response
+    const responseInsert = await pool.query(
       "INSERT INTO responses (survey_id, person_id, cp) VALUES ($1,$2,$3) RETURNING id",
       [surveyId, personId, cp]
     );
-    const responseId = responseResult.rows[0].id;
+    const responseId = responseInsert.rows[0].id;
 
-    // 4️⃣ Obtener pregunta
+    // Obtener la pregunta
     const questionResult = await pool.query(
       "SELECT id FROM questions WHERE survey_id=$1 LIMIT 1",
       [surveyId]
     );
     const questionId = questionResult.rows[0].id;
 
-    // 5️⃣ Obtener opción según respuesta
-    const optionResult = await pool.query(
-      "SELECT id FROM question_options WHERE question_id=$1 AND text=$2 LIMIT 1",
-      [questionId, answer]
-    );
-    const optionId = optionResult.rows.length > 0 ? optionResult.rows[0].id : null;
-
-    // 6️⃣ Guardar respuesta
+    // Insertar la respuesta
     await pool.query(
-      "INSERT INTO answers (response_id, question_id, option_id) VALUES ($1,$2,$3)",
-      [responseId, questionId, optionId]
+      "INSERT INTO answers (response_id, question_id, text_answer) VALUES ($1,$2,$3)",
+      [responseId, questionId, answer]
     );
 
-    res.json({ status: "ok", message: "Encuesta enviada correctamente" });
-
+    res.json({ status: "ok", message: "Encuesta guardada correctamente" });
   } catch (error) {
-    console.error("❌ Error al guardar encuesta:", error);
-    res.status(500).json({ error: "Database insert failed" });
+    console.error(error);
+    res.status(500).json({ error: "Error al guardar encuesta" });
   }
 });
 
@@ -125,3 +124,4 @@ const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => {
   console.log(`✅ Server listening on port ${PORT}`);
 });
+
