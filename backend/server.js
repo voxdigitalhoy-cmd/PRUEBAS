@@ -17,7 +17,7 @@ app.use(express.json());
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Conexión a PostgreSQL (Render)
+// Conexión a PostgreSQL
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: { rejectUnauthorized: false }
@@ -34,50 +34,57 @@ app.get("/api/test", async (req, res) => {
   }
 });
 
-// ✅ Nueva ruta para guardar encuestas (Formulario)
+// ✅ Endpoint para guardar encuesta
 app.post("/api/encuestas", async (req, res) => {
   try {
     const {
-      identifier,
+      ine_identifier,
       first_initial,
       last_initial,
       mother_initial,
       section,
       cp,
-      sex,
-      answer // "Sí" o "No"
+      birth_year,
+      survey_id,
+      question_id,
+      option_id
     } = req.body;
 
-    // 🔹 Verificar si el usuario ya existe
-    let person = await pool.query(
-      "SELECT * FROM persons WHERE identifier = $1",
-      [identifier]
+    // 1️⃣ Crear o encontrar usuario
+    let personResult = await pool.query(
+      "SELECT id FROM persons WHERE identifier = $1",
+      [ine_identifier]
     );
 
-    if (person.rows.length === 0) {
-      const result = await pool.query(
-        `INSERT INTO persons 
-          (identifier, first_initial, last_initial, mother_initial, section, cp, sex)
-         VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING *`,
-        [identifier, first_initial, last_initial, mother_initial, section, cp, sex]
+    let personId;
+    if (personResult.rows.length === 0) {
+      const insertPerson = await pool.query(
+        `INSERT INTO persons
+         (identifier, first_initial, last_initial, mother_initial, section, cp, birth_year)
+         VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING id`,
+        [ine_identifier, first_initial, last_initial, mother_initial, section, cp, birth_year]
       );
-      person = { rows: [result.rows[0]] };
+      personId = insertPerson.rows[0].id;
+    } else {
+      personId = personResult.rows[0].id;
     }
 
-    // 🔹 Crear respuesta para encuesta 1 (presidente municipal)
-    const response = await pool.query(
-      "INSERT INTO responses (survey_id, person_id, cp) VALUES ($1,$2,$3) RETURNING *",
-      [1, person.rows[0].id, cp]
+    // 2️⃣ Crear respuesta
+    const responseResult = await pool.query(
+      `INSERT INTO responses (survey_id, person_id, cp)
+       VALUES ($1,$2,$3) RETURNING id`,
+      [survey_id, personId, cp]
     );
+    const responseId = responseResult.rows[0].id;
 
-    // 🔹 Guardar la respuesta
-    const optionId = answer.toLowerCase() === "sí" ? 1 : 2; // suponiendo opciones 1=Sí, 2=No
+    // 3️⃣ Crear answer
     await pool.query(
-      "INSERT INTO answers (response_id, question_id, option_id) VALUES ($1,$2,$3)",
-      [response.rows[0].id, 1, optionId] // question_id = 1
+      `INSERT INTO answers (response_id, question_id, option_id)
+       VALUES ($1, $2, $3)`,
+      [responseId, question_id, option_id]
     );
 
-    res.json({ status: "ok" });
+    res.json({ status: "ok", message: "Encuesta guardada correctamente" });
   } catch (error) {
     console.error("❌ Error al guardar encuesta:", error);
     res.status(500).json({ error: "Database insert failed" });
