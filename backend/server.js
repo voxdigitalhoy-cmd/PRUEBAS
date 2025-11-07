@@ -13,7 +13,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Configuración de rutas absolutas
+// Configuración rutas absolutas para producción (Render)
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -23,7 +23,7 @@ const pool = new Pool({
   ssl: { rejectUnauthorized: false }
 });
 
-// 🔹 Ruta de prueba para verificar conexión a la base de datos
+// 🔹 Ruta de prueba para verificar conexión
 app.get("/api/test", async (req, res) => {
   try {
     const result = await pool.query("SELECT NOW()");
@@ -31,6 +31,23 @@ app.get("/api/test", async (req, res) => {
   } catch (error) {
     console.error("❌ Error DB:", error);
     res.status(500).json({ error: "Database connection failed" });
+  }
+});
+
+// ✅ Ruta para guardar encuestas
+app.post("/api/encuestas", async (req, res) => {
+  try {
+    const { nombre, edad, preferencia } = req.body;
+
+    const result = await pool.query(
+      "INSERT INTO encuestas (nombre, edad, preferencia) VALUES ($1, $2, $3) RETURNING *",
+      [nombre, edad, preferencia]
+    );
+
+    res.json({ status: "ok", data: result.rows[0] });
+  } catch (error) {
+    console.error("❌ Error al guardar encuesta:", error);
+    res.status(500).json({ error: "Database insert failed" });
   }
 });
 
