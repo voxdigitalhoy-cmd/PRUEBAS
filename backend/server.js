@@ -34,7 +34,7 @@ app.get("/api/test", async (req, res) => {
   }
 });
 
-// ✅ Ruta para guardar encuestas
+// ✅ Ruta para guardar encuestas (Formulario)
 app.post("/api/encuestas", async (req, res) => {
   try {
     const { nombre, edad, preferencia } = req.body;
@@ -48,6 +48,17 @@ app.post("/api/encuestas", async (req, res) => {
   } catch (error) {
     console.error("❌ Error al guardar encuesta:", error);
     res.status(500).json({ error: "Database insert failed" });
+  }
+});
+
+// ✅ Ruta para obtener las encuestas
+app.get("/api/encuestas", async (req, res) => {
+  try {
+    const result = await pool.query("SELECT * FROM encuestas ORDER BY id DESC");
+    res.json(result.rows);
+  } catch (error) {
+    console.error("❌ Error al obtener encuestas:", error);
+    res.status(500).json({ error: "Database fetch failed" });
   }
 });
 
