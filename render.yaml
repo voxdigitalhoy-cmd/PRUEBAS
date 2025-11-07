@@ -1,0 +1,22 @@
+services:
+  - name: encuestas-vox-backend
+    env: node
+    plan: free
+    buildCommand: cd backend && npm install
+    startCommand: cd backend && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: vox_digital_encuestas_db
+  - name: encuestas-vox-frontend
+    type: web
+    env: static
+    plan: free
+    buildCommand: cd frontend && npm install && npm run build
+    staticPublishPath: frontend/dist
+databases:
+  - name: vox_digital_encuestas_db
+    databaseName: vox_digital_encuestas
+    plan: free
