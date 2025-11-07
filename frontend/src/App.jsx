@@ -1,21 +1,21 @@
 import React, { useState } from "react";
 
 export default function App() {
-  const [identifier, setIdentifier] = useState(""); // # de INE
-  const [firstInitial, setFirstInitial] = useState(""); // Inicial del primer nombre
-  const [lastInitial, setLastInitial] = useState(""); // Inicial del apellido paterno
-  const [motherInitial, setMotherInitial] = useState(""); // Inicial del apellido materno
-  const [section, setSection] = useState(""); // Sección del INE
-  const [cp, setCp] = useState(""); // Código postal
-  const [sex, setSex] = useState("X"); // H/M/X
-  const [answer, setAnswer] = useState(""); // Sí / No
+  const [ine, setIne] = useState("");
+  const [firstInitial, setFirstInitial] = useState("");
+  const [lastInitial, setLastInitial] = useState("");
+  const [motherInitial, setMotherInitial] = useState("");
+  const [section, setSection] = useState("");
+  const [cp, setCp] = useState("");
+  const [birthYear, setBirthYear] = useState("");
+  const [answer, setAnswer] = useState("");
   const [message, setMessage] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!identifier || !firstInitial || !lastInitial || !section || !cp || !answer) {
-      setMessage("❌ Por favor completa todos los campos obligatorios.");
+    if (!ine || !firstInitial || !lastInitial || !section || !cp || !birthYear || !answer) {
+      setMessage("Por favor completa todos los campos.");
       return;
     }
 
@@ -24,35 +24,31 @@ export default function App() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          identifier,
+          ine_identifier: ine,
           first_initial: firstInitial.toUpperCase(),
           last_initial: lastInitial.toUpperCase(),
-          mother_initial: motherInitial.toUpperCase(),
+          mother_initial: motherInitial ? motherInitial.toUpperCase() : null,
           section,
           cp,
-          sex,
-          answer
+          birth_year: parseInt(birthYear),
+          survey_id: 1,      // ID de la encuesta creada en 003_seed_survey.sql
+          question_id: 1,    // ID de la pregunta
+          option_id: answer === "si" ? 1 : 2 // 1=Sí, 2=No
         })
       });
 
       const data = await res.json();
       if (data.status === "ok") {
-        setMessage("✅ Encuesta enviada correctamente. ¡Gracias!");
-        // limpiar formulario
-        setIdentifier("");
-        setFirstInitial("");
-        setLastInitial("");
-        setMotherInitial("");
-        setSection("");
-        setCp("");
-        setSex("X");
-        setAnswer("");
+        setMessage("✅ Encuesta enviada correctamente");
+        // Limpiar formulario
+        setIne(""); setFirstInitial(""); setLastInitial(""); setMotherInitial("");
+        setSection(""); setCp(""); setBirthYear(""); setAnswer("");
       } else {
-        setMessage("❌ Error al enviar la encuesta.");
+        setMessage("❌ Error al enviar la encuesta");
       }
     } catch (err) {
       console.error(err);
-      setMessage("❌ Error de conexión con el servidor.");
+      setMessage("❌ Error al conectar con el servidor");
     }
   };
 
@@ -61,46 +57,53 @@ export default function App() {
       <h2>ENCUESTAS VOX DIGITAL HOY X MEXICO</h2>
       <form onSubmit={handleSubmit}>
         <div>
-          <label># de INE (OCR): </label>
-          <input value={identifier} onChange={(e) => setIdentifier(e.target.value)} required />
+          <label>INE (# OCR): </label>
+          <input value={ine} onChange={(e) => setIne(e.target.value)} />
         </div>
         <div>
-          <label>Inicial primer nombre: </label>
-          <input value={firstInitial} onChange={(e) => setFirstInitial(e.target.value)} maxLength={1} required />
+          <label>Inicial del primer nombre: </label>
+          <input value={firstInitial} onChange={(e) => setFirstInitial(e.target.value)} maxLength={1}/>
         </div>
         <div>
-          <label>Inicial apellido paterno: </label>
-          <input value={lastInitial} onChange={(e) => setLastInitial(e.target.value)} maxLength={1} required />
+          <label>Inicial del apellido paterno: </label>
+          <input value={lastInitial} onChange={(e) => setLastInitial(e.target.value)} maxLength={1}/>
         </div>
         <div>
-          <label>Inicial apellido materno: </label>
-          <input value={motherInitial} onChange={(e) => setMotherInitial(e.target.value)} maxLength={1} />
+          <label>Inicial del apellido materno (X si indefinido): </label>
+          <input value={motherInitial} onChange={(e) => setMotherInitial(e.target.value)} maxLength={1}/>
         </div>
         <div>
           <label>Sección del INE: </label>
-          <input value={section} onChange={(e) => setSection(e.target.value)} required />
+          <input value={section} onChange={(e) => setSection(e.target.value)} />
         </div>
         <div>
-          <label>Código Postal: </label>
-          <input value={cp} onChange={(e) => setCp(e.target.value)} required />
+          <label>Código postal: </label>
+          <input value={cp} onChange={(e) => setCp(e.target.value)} />
         </div>
         <div>
-          <label>Sexo: </label>
-          <select value={sex} onChange={(e) => setSex(e.target.value)}>
-            <option value="H">Hombre</option>
-            <option value="M">Mujer</option>
-            <option value="X">Indefinido</option>
-          </select>
+          <label>Año de nacimiento: </label>
+          <input type="number" value={birthYear} onChange={(e) => setBirthYear(e.target.value)} />
         </div>
         <div>
-          <label>¿Quieres que siga el presidente municipal?: </label>
-          <select value={answer} onChange={(e) => setAnswer(e.target.value)} required>
-            <option value="">-- Selecciona --</option>
-            <option value="Sí">Sí</option>
-            <option value="No">No</option>
-          </select>
+          <label>¿Quieres que siga el presidente municipal?</label><br/>
+          <label>
+            <input
+              type="radio"
+              value="si"
+              checked={answer === "si"}
+              onChange={(e) => setAnswer(e.target.value)}
+            /> Sí
+          </label>
+          <label style={{ marginLeft: 10 }}>
+            <input
+              type="radio"
+              value="no"
+              checked={answer === "no"}
+              onChange={(e) => setAnswer(e.target.value)}
+            /> No
+          </label>
         </div>
-        <button type="submit" style={{ marginTop: 10 }}>Enviar Encuesta</button>
+        <button type="submit" style={{ marginTop: 10 }}>Enviar encuesta</button>
       </form>
       {message && <p style={{ marginTop: 10 }}>{message}</p>}
     </div>
