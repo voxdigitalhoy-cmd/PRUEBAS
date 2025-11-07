@@ -51,7 +51,7 @@ export default function App() {
     <div style={{ padding: 20 }}>
       <h1>ENCUESTAS VOX DIGITAL HOY X MEXICO</h1>
 
-      <form onSubmit={handleSubmit} style={{ marginBottom: 20 }}>
+     <form onSubmit={handleSubmit}> style={{ marginBottom: 20 }}>
         <div>
           <label>
             Nombre:
