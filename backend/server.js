@@ -34,31 +34,53 @@ app.get("/api/test", async (req, res) => {
   }
 });
 
-// ✅ Ruta para guardar encuestas (Formulario)
+// ✅ Nueva ruta para guardar encuestas (Formulario)
 app.post("/api/encuestas", async (req, res) => {
   try {
-    const { nombre, edad, preferencia } = req.body;
+    const {
+      identifier,
+      first_initial,
+      last_initial,
+      mother_initial,
+      section,
+      cp,
+      sex,
+      answer // "Sí" o "No"
+    } = req.body;
 
-    const result = await pool.query(
-      "INSERT INTO encuestas (nombre, edad, preferencia) VALUES ($1, $2, $3) RETURNING *",
-      [nombre, edad, preferencia]
+    // 🔹 Verificar si el usuario ya existe
+    let person = await pool.query(
+      "SELECT * FROM persons WHERE identifier = $1",
+      [identifier]
     );
 
-    res.json({ status: "ok", data: result.rows[0] });
+    if (person.rows.length === 0) {
+      const result = await pool.query(
+        `INSERT INTO persons 
+          (identifier, first_initial, last_initial, mother_initial, section, cp, sex)
+         VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING *`,
+        [identifier, first_initial, last_initial, mother_initial, section, cp, sex]
+      );
+      person = { rows: [result.rows[0]] };
+    }
+
+    // 🔹 Crear respuesta para encuesta 1 (presidente municipal)
+    const response = await pool.query(
+      "INSERT INTO responses (survey_id, person_id, cp) VALUES ($1,$2,$3) RETURNING *",
+      [1, person.rows[0].id, cp]
+    );
+
+    // 🔹 Guardar la respuesta
+    const optionId = answer.toLowerCase() === "sí" ? 1 : 2; // suponiendo opciones 1=Sí, 2=No
+    await pool.query(
+      "INSERT INTO answers (response_id, question_id, option_id) VALUES ($1,$2,$3)",
+      [response.rows[0].id, 1, optionId] // question_id = 1
+    );
+
+    res.json({ status: "ok" });
   } catch (error) {
     console.error("❌ Error al guardar encuesta:", error);
     res.status(500).json({ error: "Database insert failed" });
-  }
-});
-
-// ✅ Ruta para obtener las encuestas
-app.get("/api/encuestas", async (req, res) => {
-  try {
-    const result = await pool.query("SELECT * FROM encuestas ORDER BY id DESC");
-    res.json(result.rows);
-  } catch (error) {
-    console.error("❌ Error al obtener encuestas:", error);
-    res.status(500).json({ error: "Database fetch failed" });
   }
 });
 
@@ -74,3 +96,4 @@ const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => {
   console.log(`✅ Server listening on port ${PORT}`);
 });
+
