@@ -1,13 +1,16 @@
 import React, { useState } from "react";
 import "./index.css";
+import logo from "../public/logo.png";
 
 export default function App() {
   const [formData, setFormData] = useState({
+    cp: "",
+    ineNumber: "",
     first_initial: "",
     last_initial: "",
     mother_initial: "",
     section: "",
-    cp: "",
+    sex: "",
     answer: ""
   });
 
@@ -16,97 +19,117 @@ export default function App() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    try {
-      const res = await fetch("/api/encuestas", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-      const data = await res.json();
-      if (data.status === "ok") {
-        alert("Encuesta guardada correctamente");
-        setFormData({
-          first_initial: "",
-          last_initial: "",
-          mother_initial: "",
-          section: "",
-          cp: "",
-          answer: ""
-        });
-      } else {
-        alert("Error al guardar encuesta");
-      }
-    } catch (err) {
-      console.error(err);
-      alert("Error al guardar encuesta");
-    }
+    console.log("Datos enviados:", formData);
+    // Aquí va la llamada a la API o lógica para enviar los datos
   };
 
   return (
     <div className="container">
+      <div className="header">
+        <img src={logo} alt="Logo" className="logo" />
+        <h1 className="main-title">
+          <span className="first-letter">E</span>NCUESTAS
+        </h1>
+        <h2 className="sub-title">VOX DIGITAL HOY</h2>
+        <p className="small-text">La Voz de la Información en Línea</p>
+      </div>
+
       <form onSubmit={handleSubmit}>
-        <img src="/logo.png" alt="Logo" className="logo" />
-        <h2>Encuesta Presidente Municipal</h2>
+        <label>
+          Código Postal:
+          <input
+            type="text"
+            name="cp"
+            maxLength="10"
+            value={formData.cp}
+            onChange={handleChange}
+            required
+          />
+        </label>
 
-        <div className="initials">
+        <label>
+          Número de INE (OCR):
           <input
             type="text"
-            name="first_initial"
-            maxLength="1"
-            placeholder="F"
-            value={formData.first_initial}
+            name="ineNumber"
+            maxLength="13"
+            value={formData.ineNumber}
             onChange={handleChange}
             required
           />
-          <input
-            type="text"
-            name="last_initial"
-            maxLength="1"
-            placeholder="L"
-            value={formData.last_initial}
-            onChange={handleChange}
-            required
-          />
-          <input
-            type="text"
-            name="mother_initial"
-            maxLength="1"
-            placeholder="M"
-            value={formData.mother_initial}
-            onChange={handleChange}
-            required
-          />
-        </div>
+        </label>
 
-        <div className="fields">
+        <div className="initials-row">
           <label>
-            Sección INE:
+            Inicial Primer nombre:
             <input
               type="text"
-              name="section"
-              maxLength="6"
-              value={formData.section}
+              name="first_initial"
+              maxLength="1"
+              value={formData.first_initial}
               onChange={handleChange}
               required
             />
           </label>
           <label>
-            Código Postal:
+            Inicial apellido Paterno:
             <input
               type="text"
-              name="cp"
-              maxLength="10"
-              value={formData.cp}
+              name="last_initial"
+              maxLength="1"
+              value={formData.last_initial}
+              onChange={handleChange}
+              required
+            />
+          </label>
+          <label>
+            Inicial apellido Materno:
+            <input
+              type="text"
+              name="mother_initial"
+              maxLength="1"
+              value={formData.mother_initial}
               onChange={handleChange}
               required
             />
           </label>
         </div>
+
+        <label>
+          Sección INE:
+          <input
+            type="text"
+            name="section"
+            maxLength="6"
+            value={formData.section}
+            onChange={handleChange}
+            required
+          />
+        </label>
+
+        <label>
+          Sexo:
+          <select
+            name="sex"
+            value={formData.sex}
+            onChange={handleChange}
+            required
+          >
+            <option value="">Selecciona</option>
+            <option value="M">Masculino</option>
+            <option value="F">Femenino</option>
+            <option value="O">Otro</option>
+            <option value="I">Indefinido</option>
+          </select>
+        </label>
 
         <div className="question">
-          <p>¿Quieres que siga de presidente municipal, Luis Ernesto Munguia Gonzales?</p>
+          <p>
+            ¿Quieres que siga de presidente municipal, Luis Ernesto Munguia
+            Gonzales?
+          </p>
           <label>
             <input
               type="radio"
@@ -115,16 +138,18 @@ export default function App() {
               checked={formData.answer === "Si"}
               onChange={handleChange}
               required
-            /> Si
+            />
+            Sí
           </label>
-          <label style={{ marginLeft: "1rem" }}>
+          <label>
             <input
               type="radio"
               name="answer"
               value="No"
               checked={formData.answer === "No"}
               onChange={handleChange}
-            /> No
+            />
+            No
           </label>
         </div>
 
