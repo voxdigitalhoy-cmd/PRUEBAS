@@ -29,7 +29,7 @@ export default function App() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Aquí iría tu POST al backend, pero para demo usamos resultados simulados
+    // Simulación de backend
     const newResults = { ...results };
     newResults.totalVotes += 1;
     if (formData.answer === "Si") newResults.yes += 1;
@@ -53,14 +53,14 @@ export default function App() {
 
   return (
     <div className="container">
-      <div className="header">
+      <header className="header">
         <img src={logo} alt="Logo" className="logo" />
         <h1>ENCUESTAS</h1>
         <h2>VOX DIGITAL HOY</h2>
         <small>La Voz de la Información en Línea</small>
-      </div>
+      </header>
 
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="survey-form">
         <div className="field-row">
           <label>Código Postal:</label>
           <input type="text" name="postal" maxLength="8" value={formData.postal} onChange={handleChange} required />
