@@ -1,49 +1,47 @@
 import React, { useState } from "react";
 import "./index.css";
+import logo from "../public/logo.png";
+import ineExample from "../public/ine_example.png";
 
 export default function App() {
   const [formData, setFormData] = useState({
-    cp: "",
-    ine: "",
     first_initial: "",
     last_initial: "",
     mother_initial: "",
     section: "",
-    sex: "",
+    cp: "",
     answer: "",
   });
 
-  const [showINEExample, setShowINEExample] = useState(false);
+  const [showINE, setShowINE] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value.toUpperCase() }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log("Datos enviados:", formData);
-    alert("Encuesta enviada");
+    alert("Encuesta enviada!");
     setFormData({
-      cp: "",
-      ine: "",
       first_initial: "",
       last_initial: "",
       mother_initial: "",
       section: "",
-      sex: "",
+      cp: "",
       answer: "",
     });
   };
 
   return (
     <div className="container">
-      <div className="header">
-        <img src="/logo.png" alt="Logo" />
+      <header>
+        <img src={logo} alt="Logo" className="logo" />
         <h1>ENCUESTAS</h1>
         <h2>VOX DIGITAL HOY</h2>
-        <p className="subtitle">La Voz de la Información en Línea</p>
-      </div>
+        <p className="subtitulo">La Voz de la Información en Línea</p>
+      </header>
 
       <form onSubmit={handleSubmit}>
         <div className="field">
@@ -51,9 +49,9 @@ export default function App() {
           <input
             type="text"
             name="cp"
-            maxLength={10}
             value={formData.cp}
             onChange={handleChange}
+            maxLength={10}
             required
           />
         </div>
@@ -62,11 +60,9 @@ export default function App() {
           <label>Número de INE (OCR):</label>
           <input
             type="text"
-            name="ine"
+            name="ocr"
+            placeholder="13 letras/números"
             maxLength={13}
-            value={formData.ine}
-            onChange={handleChange}
-            required
           />
         </div>
 
@@ -76,9 +72,9 @@ export default function App() {
             <input
               type="text"
               name="first_initial"
-              maxLength={1}
               value={formData.first_initial}
               onChange={handleChange}
+              maxLength={1}
               required
             />
           </div>
@@ -87,9 +83,9 @@ export default function App() {
             <input
               type="text"
               name="last_initial"
-              maxLength={1}
               value={formData.last_initial}
               onChange={handleChange}
+              maxLength={1}
               required
             />
           </div>
@@ -98,9 +94,9 @@ export default function App() {
             <input
               type="text"
               name="mother_initial"
-              maxLength={1}
               value={formData.mother_initial}
               onChange={handleChange}
+              maxLength={1}
               required
             />
           </div>
@@ -111,9 +107,9 @@ export default function App() {
           <input
             type="text"
             name="section"
-            maxLength={6}
             value={formData.section}
             onChange={handleChange}
+            maxLength={6}
             required
           />
         </div>
@@ -121,8 +117,8 @@ export default function App() {
         <div className="field">
           <label>Sexo:</label>
           <select
-            name="sex"
-            value={formData.sex}
+            name="answer"
+            value={formData.answer}
             onChange={handleChange}
             required
           >
@@ -133,44 +129,41 @@ export default function App() {
         </div>
 
         <div className="field">
-          <p>¿Quieres que siga de presidente municipal, Luis Ernesto Munguia Gonzales?</p>
+          <p>¿Quieres que siga como presidente municipal, Luis Ernesto Munguia Gonzales?</p>
           <label>
             <input
               type="radio"
               name="answer"
-              value="Si"
-              checked={formData.answer === "Si"}
+              value="Sí"
+              checked={formData.answer === "Sí"}
               onChange={handleChange}
               required
-            />{" "}
-            Sí
+            /> Sí
           </label>
-          <label>
+          <label style={{ marginLeft: "1rem" }}>
             <input
               type="radio"
               name="answer"
               value="No"
               checked={formData.answer === "No"}
               onChange={handleChange}
-            />{" "}
-            No
+            /> No
           </label>
         </div>
 
-        <div className="field">
-          <button type="button" onClick={() => setShowINEExample(!showINEExample)}>
-            Ver ejemplo de INE
+        <button type="submit">Enviar Encuesta</button>
+
+        <div className="ine-help">
+          <button
+            type="button"
+            onClick={() => setShowINE(!showINE)}
+          >
+            Ver ejemplo INE (OCR)
           </button>
-          {showINEExample && (
-            <img
-              src="/ine_example.png"
-              alt="Ejemplo INE"
-              className="ine-example"
-            />
+          {showINE && (
+            <img src={ineExample} alt="Ejemplo INE" className="ine-image" />
           )}
         </div>
-
-        <button type="submit">Enviar Encuesta</button>
       </form>
     </div>
   );
