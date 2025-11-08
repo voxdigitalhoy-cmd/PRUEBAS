@@ -1,138 +1,96 @@
 import React, { useState } from "react";
 import "./index.css";
+import logo from "../public/logo.png";
+import ineExample from "../public/ine_example.png";
 
 export default function App() {
   const [formData, setFormData] = useState({
-    cp: "",
+    postal: "",
+    ineNumber: "",
+    first_initial: "",
+    last_initial: "",
+    mother_initial: "",
     section: "",
-    ocr: "",
-    firstInitial: "",
-    lastInitial: "",
-    motherInitial: "",
     sex: "",
     answer: ""
   });
 
-  // Simulación de resultados de la encuesta
-  const [results, setResults] = useState({ yes: 0, no: 0 });
+  const [results, setResults] = useState({
+    totalVotes: 0,
+    yes: 0,
+    no: 0
+  });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Datos enviados:", formData);
 
-    // Actualiza resultados simulando que se suman los votos
-    if (formData.answer === "Sí") {
-      setResults((prev) => ({ ...prev, yes: prev.yes + 1 }));
-    } else if (formData.answer === "No") {
-      setResults((prev) => ({ ...prev, no: prev.no + 1 }));
-    }
+    // Aquí iría tu POST al backend, pero para demo usamos resultados simulados
+    const newResults = { ...results };
+    newResults.totalVotes += 1;
+    if (formData.answer === "Si") newResults.yes += 1;
+    if (formData.answer === "No") newResults.no += 1;
+    setResults(newResults);
 
-    // Limpiar la respuesta después de enviar
-    setFormData({ ...formData, answer: "" });
+    setFormData({
+      postal: "",
+      ineNumber: "",
+      first_initial: "",
+      last_initial: "",
+      mother_initial: "",
+      section: "",
+      sex: "",
+      answer: ""
+    });
   };
 
-  const totalVotes = results.yes + results.no;
-  const yesPercent = totalVotes ? ((results.yes / totalVotes) * 100).toFixed(0) : 0;
-  const noPercent = totalVotes ? ((results.no / totalVotes) * 100).toFixed(0) : 0;
+  const yesPercent = results.totalVotes ? Math.round((results.yes / results.totalVotes) * 100) : 0;
+  const noPercent = results.totalVotes ? Math.round((results.no / results.totalVotes) * 100) : 0;
 
   return (
     <div className="container">
-      {/* Logo y nombre */}
       <div className="header">
-        <img src="/logo.png" alt="Logo" className="logo" />
+        <img src={logo} alt="Logo" className="logo" />
         <h1>ENCUESTAS</h1>
         <h2>VOX DIGITAL HOY</h2>
         <small>La Voz de la Información en Línea</small>
       </div>
 
       <form onSubmit={handleSubmit}>
-        {/* Código Postal */}
         <div className="field-row">
           <label>Código Postal:</label>
-          <input
-            type="text"
-            name="cp"
-            maxLength={8}
-            value={formData.cp}
-            onChange={handleChange}
-            required
-          />
+          <input type="text" name="postal" maxLength="8" value={formData.postal} onChange={handleChange} required />
         </div>
 
-        {/* Sección INE */}
         <div className="field-row">
           <label>Sección INE:</label>
-          <input
-            type="text"
-            name="section"
-            maxLength={6}
-            value={formData.section}
-            onChange={(e) => setFormData({...formData, section: e.target.value.toUpperCase()})}
-            required
-          />
+          <input type="text" name="section" maxLength="6" value={formData.section} onChange={handleChange} required />
         </div>
 
-        {/* Número OCR */}
         <div className="field-row">
           <label>Número INE (OCR):</label>
-          <input
-            type="text"
-            name="ocr"
-            maxLength={13}
-            value={formData.ocr}
-            onChange={(e) => setFormData({...formData, ocr: e.target.value.toUpperCase()})}
-            required
-          />
+          <input type="text" name="ineNumber" maxLength="13" value={formData.ineNumber} onChange={handleChange} required />
         </div>
 
-        {/* Imagen ejemplo INE */}
-        <div className="ine-image">
-          <a href="/ine_example.png" target="_blank" rel="noopener noreferrer">
-            <img src="/ine_example.png" alt="Ejemplo INE" />
-          </a>
-        </div>
-
-        {/* Iniciales */}
         <div className="field-row">
           <label>Inicial Primer Nombre:</label>
-          <input
-            type="text"
-            name="firstInitial"
-            maxLength={1}
-            value={formData.firstInitial}
-            onChange={(e) => setFormData({...formData, firstInitial: e.target.value.toUpperCase()})}
-            required
-          />
-        </div>
-        <div className="field-row">
-          <label>Inicial Apellido Paterno:</label>
-          <input
-            type="text"
-            name="lastInitial"
-            maxLength={1}
-            value={formData.lastInitial}
-            onChange={(e) => setFormData({...formData, lastInitial: e.target.value.toUpperCase()})}
-            required
-          />
-        </div>
-        <div className="field-row">
-          <label>Inicial Apellido Materno:</label>
-          <input
-            type="text"
-            name="motherInitial"
-            maxLength={1}
-            value={formData.motherInitial}
-            onChange={(e) => setFormData({...formData, motherInitial: e.target.value.toUpperCase()})}
-            required
-          />
+          <input type="text" name="first_initial" maxLength="1" value={formData.first_initial} onChange={handleChange} required />
         </div>
 
-        {/* Sexo */}
+        <div className="field-row">
+          <label>Inicial Apellido Paterno:</label>
+          <input type="text" name="last_initial" maxLength="1" value={formData.last_initial} onChange={handleChange} required />
+        </div>
+
+        <div className="field-row">
+          <label>Inicial Apellido Materno:</label>
+          <input type="text" name="mother_initial" maxLength="1" value={formData.mother_initial} onChange={handleChange} required />
+        </div>
+
         <div className="field-row">
           <label>Sexo:</label>
           <select name="sex" value={formData.sex} onChange={handleChange} required>
@@ -142,39 +100,35 @@ export default function App() {
           </select>
         </div>
 
-        {/* Pregunta principal */}
+        <div className="ine-image">
+          <img src={ineExample} alt="Ejemplo INE" title="Click para ver el número OCR" onClick={() => window.open(ineExample, "_blank")} />
+        </div>
+
         <div className="question">
-          <p>¿Quieres que siga como presidente municipal, Luis Ernesto Munguia Gonzales?</p>
+          <p>¿Quieres que siga de presidente municipal, Luis Ernesto Munguia Gonzales?</p>
           <label>
-            <input
-              type="radio"
-              name="answer"
-              value="Sí"
-              checked={formData.answer === "Sí"}
-              onChange={handleChange}
-              required
-            /> Sí
+            <input type="radio" name="answer" value="Si" checked={formData.answer === "Si"} onChange={handleChange} required /> Sí
           </label>
           <label>
-            <input
-              type="radio"
-              name="answer"
-              value="No"
-              checked={formData.answer === "No"}
-              onChange={handleChange}
-            /> No
+            <input type="radio" name="answer" value="No" checked={formData.answer === "No"} onChange={handleChange} /> No
           </label>
         </div>
 
         <button type="submit">Enviar Encuesta</button>
       </form>
 
-      {/* Resultados */}
-      {totalVotes > 0 && (
+      {results.totalVotes > 0 && (
         <div className="results">
           <h3>Resultados</h3>
-          <p>Sí: {results.yes} votos ({yesPercent}%)</p>
-          <p>No: {results.no} votos ({noPercent}%)</p>
+          <p>Total de votos: {results.totalVotes}</p>
+
+          <div className="bar-container">
+            <div className="bar yes" style={{ width: `${yesPercent}%` }}>{yesPercent}% ({results.yes})</div>
+          </div>
+
+          <div className="bar-container">
+            <div className="bar no" style={{ width: `${noPercent}%` }}>{noPercent}% ({results.no})</div>
+          </div>
         </div>
       )}
     </div>
