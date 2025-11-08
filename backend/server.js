@@ -26,12 +26,12 @@ app.get("/api/test", async (req, res) => {
     const result = await pool.query("SELECT NOW()");
     res.json({ status: "ok", time: result.rows[0] });
   } catch (error) {
-    console.error(error);
+    console.error("❌ Error DB:", error);
     res.status(500).json({ error: "Database connection failed" });
   }
 });
 
-// ✅ Guardar encuesta
+// ✅ Guardar respuesta de encuesta dinámica
 app.post("/api/encuestas", async (req, res) => {
   const {
     ine,
@@ -40,20 +40,19 @@ app.post("/api/encuestas", async (req, res) => {
     mother_initial,
     section,
     cp,
-    sex,
+    context, // Ej: municipio, colonia, estado, país
+    question,
     answer
   } = req.body;
 
   try {
-    // 1️⃣ Verificar si la persona ya existe
+    // Verificar o crear persona
     let personResult = await pool.query(
       "SELECT id FROM persons WHERE identifier=$1",
       [ine]
     );
-
     let personId;
     if (personResult.rows.length === 0) {
-      // Insertar nueva persona
       const insertPerson = await pool.query(
         "INSERT INTO persons (identifier, first_initial, last_initial, mother_initial, section, cp) VALUES ($1,$2,$3,$4,$5,$6) RETURNING id",
         [ine, first_initial, last_initial, mother_initial, section, cp]
@@ -63,30 +62,29 @@ app.post("/api/encuestas", async (req, res) => {
       personId = personResult.rows[0].id;
     }
 
-    // 2️⃣ Crear respuesta en responses (encuesta "única")
+    // Crear o recuperar encuesta según el contexto
     const surveyResult = await pool.query(
-      "SELECT id FROM surveys WHERE title='Presidente Municipal' LIMIT 1"
+      "SELECT id FROM surveys WHERE title=$1 LIMIT 1",
+      [context]
     );
 
     let surveyId;
     if (surveyResult.rows.length === 0) {
-      // Crear encuesta si no existe
       const insertSurvey = await pool.query(
         "INSERT INTO surveys (title, description, active) VALUES ($1,$2,$3) RETURNING id",
-        ["Presidente Municipal", "Encuesta sobre el presidente municipal", true]
+        [context, `Encuesta en ${context}`, true]
       );
       surveyId = insertSurvey.rows[0].id;
 
-      // Crear pregunta
       await pool.query(
         "INSERT INTO questions (survey_id, type, text, required, position) VALUES ($1,$2,$3,$4,$5)",
-        [surveyId, "single-choice", "¿Quieres que siga el presidente municipal?", true, 0]
+        [surveyId, "single-choice", question, true, 0]
       );
     } else {
       surveyId = surveyResult.rows[0].id;
     }
 
-    // Insertar response
+    // Crear respuesta general
     const responseInsert = await pool.query(
       "INSERT INTO responses (survey_id, person_id, cp) VALUES ($1,$2,$3) RETURNING id",
       [surveyId, personId, cp]
@@ -100,7 +98,7 @@ app.post("/api/encuestas", async (req, res) => {
     );
     const questionId = questionResult.rows[0].id;
 
-    // Insertar la respuesta
+    // Insertar respuesta del usuario
     await pool.query(
       "INSERT INTO answers (response_id, question_id, text_answer) VALUES ($1,$2,$3)",
       [responseId, questionId, answer]
@@ -108,7 +106,7 @@ app.post("/api/encuestas", async (req, res) => {
 
     res.json({ status: "ok", message: "Encuesta guardada correctamente" });
   } catch (error) {
-    console.error(error);
+    console.error("❌ Error al guardar encuesta:", error);
     res.status(500).json({ error: "Error al guardar encuesta" });
   }
 });
