@@ -1,97 +1,112 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./index.css";
 import logo from "../public/logo.png";
 import ineExample from "../public/ine_example.png";
 
 export default function App() {
   const [formData, setFormData] = useState({
-    postal: "",
-    ineNumber: "",
+    cp: "",
+    section: "",
+    ocr: "",
     first_initial: "",
     last_initial: "",
     mother_initial: "",
-    section: "",
     sex: "",
     answer: ""
   });
 
   const [results, setResults] = useState({
-    totalVotes: 0,
-    yes: 0,
-    no: 0
+    Si: 0,
+    No: 0,
+    total: 0
   });
+
+  // Simulación de votos en tiempo real
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const randomVote = Math.random() > 0.5 ? "Si" : "No";
+      setResults(prev => ({
+        ...prev,
+        [randomVote]: prev[randomVote] + 1,
+        total: prev.total + 1
+      }));
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData(prev => ({ ...prev, [name]: value.toUpperCase() }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    // Simulación de backend
-    const newResults = { ...results };
-    newResults.totalVotes += 1;
-    if (formData.answer === "Si") newResults.yes += 1;
-    if (formData.answer === "No") newResults.no += 1;
-    setResults(newResults);
-
+    if (formData.answer) {
+      setResults(prev => ({
+        ...prev,
+        [formData.answer]: prev[formData.answer] + 1,
+        total: prev.total + 1
+      }));
+    }
+    alert("Encuesta enviada!");
     setFormData({
-      postal: "",
-      ineNumber: "",
+      cp: "",
+      section: "",
+      ocr: "",
       first_initial: "",
       last_initial: "",
       mother_initial: "",
-      section: "",
       sex: "",
       answer: ""
     });
   };
 
-  const yesPercent = results.totalVotes ? Math.round((results.yes / results.totalVotes) * 100) : 0;
-  const noPercent = results.totalVotes ? Math.round((results.no / results.totalVotes) * 100) : 0;
+  const percentage = (vote) => {
+    return results.total === 0 ? 0 : ((results[vote] / results.total) * 100).toFixed(1);
+  };
 
   return (
     <div className="container">
-      <header className="header">
-        <img src={logo} alt="Logo" className="logo" />
-        <h1>ENCUESTAS</h1>
-        <h2>VOX DIGITAL HOY</h2>
-        <small>La Voz de la Información en Línea</small>
+      <header>
+        <img src={logo} alt="Logo" className="logo"/>
+        <h1>ENCUESTAS VOX DIGITAL HOY</h1>
+        <p className="subtitle">La Voz de la Información en Línea</p>
       </header>
 
-      <form onSubmit={handleSubmit} className="survey-form">
-        <div className="field-row">
+      <form onSubmit={handleSubmit}>
+        <div className="field">
           <label>Código Postal:</label>
-          <input type="text" name="postal" maxLength="8" value={formData.postal} onChange={handleChange} required />
+          <input type="text" name="cp" maxLength={10} value={formData.cp} onChange={handleChange} required />
         </div>
 
-        <div className="field-row">
+        <div className="field">
           <label>Sección INE:</label>
-          <input type="text" name="section" maxLength="6" value={formData.section} onChange={handleChange} required />
+          <input type="text" name="section" maxLength={6} value={formData.section} onChange={handleChange} required />
         </div>
 
-        <div className="field-row">
-          <label>Número INE (OCR):</label>
-          <input type="text" name="ineNumber" maxLength="13" value={formData.ineNumber} onChange={handleChange} required />
+        <div className="field">
+          <label>Número de INE (OCR):</label>
+          <input type="text" name="ocr" maxLength={13} value={formData.ocr} onChange={handleChange} required />
+          <img src={ineExample} alt="Ejemplo INE" className="ine-example"/>
         </div>
 
-        <div className="field-row">
+        <div className="field">
           <label>Inicial Primer Nombre:</label>
-          <input type="text" name="first_initial" maxLength="1" value={formData.first_initial} onChange={handleChange} required />
+          <input type="text" name="first_initial" maxLength={1} value={formData.first_initial} onChange={handleChange} required />
         </div>
 
-        <div className="field-row">
+        <div className="field">
           <label>Inicial Apellido Paterno:</label>
-          <input type="text" name="last_initial" maxLength="1" value={formData.last_initial} onChange={handleChange} required />
+          <input type="text" name="last_initial" maxLength={1} value={formData.last_initial} onChange={handleChange} required />
         </div>
 
-        <div className="field-row">
+        <div className="field">
           <label>Inicial Apellido Materno:</label>
-          <input type="text" name="mother_initial" maxLength="1" value={formData.mother_initial} onChange={handleChange} required />
+          <input type="text" name="mother_initial" maxLength={1} value={formData.mother_initial} onChange={handleChange} required />
         </div>
 
-        <div className="field-row">
+        <div className="field">
           <label>Sexo:</label>
           <select name="sex" value={formData.sex} onChange={handleChange} required>
             <option value="">Selecciona</option>
@@ -100,12 +115,8 @@ export default function App() {
           </select>
         </div>
 
-        <div className="ine-image">
-          <img src={ineExample} alt="Ejemplo INE" title="Click para ver el número OCR" onClick={() => window.open(ineExample, "_blank")} />
-        </div>
-
-        <div className="question">
-          <p>¿Quieres que siga de presidente municipal, Luis Ernesto Munguia Gonzales?</p>
+        <div className="field question">
+          <p>¿Quieres que siga como presidente municipal, Luis Ernesto Munguia Gonzales?</p>
           <label>
             <input type="radio" name="answer" value="Si" checked={formData.answer === "Si"} onChange={handleChange} required /> Sí
           </label>
@@ -117,20 +128,16 @@ export default function App() {
         <button type="submit">Enviar Encuesta</button>
       </form>
 
-      {results.totalVotes > 0 && (
-        <div className="results">
-          <h3>Resultados</h3>
-          <p>Total de votos: {results.totalVotes}</p>
-
-          <div className="bar-container">
-            <div className="bar yes" style={{ width: `${yesPercent}%` }}>{yesPercent}% ({results.yes})</div>
-          </div>
-
-          <div className="bar-container">
-            <div className="bar no" style={{ width: `${noPercent}%` }}>{noPercent}% ({results.no})</div>
-          </div>
+      <div className="results">
+        <h2>Resultados en tiempo real</h2>
+        <div className="bar">
+          <div className="fill si" style={{width: `${percentage("Si")}%`}}>{percentage("Si")}% ({results.Si})</div>
         </div>
-      )}
+        <div className="bar">
+          <div className="fill no" style={{width: `${percentage("No")}%`}}>{percentage("No")}% ({results.No})</div>
+        </div>
+        <p>Total votos: {results.total}</p>
+      </div>
     </div>
   );
 }
