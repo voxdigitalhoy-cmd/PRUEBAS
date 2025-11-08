@@ -1,96 +1,91 @@
 body {
-  font-family: Arial, sans-serif;
-  background-color: #f5f5f5;
   margin: 0;
-  padding: 0;
+  font-family: Arial, sans-serif;
 }
 
-.container {
-  max-width: 500px;
-  margin: 2rem auto;
-  background: white;
-  padding: 1.5rem;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+.app-container {
+  background-color: #0D47A1; /* combina con logo */
+  min-height: 100vh;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem;
 }
 
-header {
+.app-header {
   text-align: center;
-  margin-bottom: 1rem;
+  margin-bottom: 2rem;
 }
 
 .logo {
-  width: 100px;
-  margin-bottom: 0.5rem;
+  width: 120px;
+  display: block;
+  margin: 0 auto;
 }
 
-h1 {
-  margin: 0;
-  font-size: 1.5rem;
-}
-
-h2 {
-  margin: 0;
-  font-size: 1.2rem;
-}
-
-.subtitulo {
+.subtitle {
   font-size: 0.8rem;
-  color: #555;
+  margin-top: 0.2rem;
 }
 
-form .field {
+.survey-form {
+  background-color: white;
+  color: black;
+  padding: 2rem;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 500px;
+  box-sizing: border-box;
+}
+
+.field-group,
+.initials-group > div {
+  display: flex;
+  flex-direction: column;
   margin-bottom: 1rem;
 }
 
-form label {
-  display: block;
-  margin-bottom: 0.3rem;
-  font-weight: bold;
+.initials-group {
+  display: flex;
+  justify-content: space-between;
 }
 
-form input[type="text"],
-form select {
-  width: 100%;
+.initials-group > div {
+  flex: 1;
+  margin-right: 0.5rem;
+}
+
+.initials-group > div:last-child {
+  margin-right: 0;
+}
+
+input,
+select {
   padding: 0.5rem;
   font-size: 1rem;
   border-radius: 4px;
   border: 1px solid #ccc;
-  box-sizing: border-box;
-}
-
-.initials {
-  display: flex;
-  justify-content: space-between;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
-}
-
-.initials div {
-  flex: 1;
-}
-
-.initials input {
-  width: 100%;
-  text-align: center;
 }
 
 button {
-  padding: 0.5rem 1rem;
+  padding: 0.5rem 1.5rem;
   font-size: 1rem;
-  margin-top: 0.5rem;
+  border: none;
+  background-color: #0D47A1;
+  color: white;
+  border-radius: 4px;
   cursor: pointer;
-}
-
-.ine-help {
   margin-top: 1rem;
-  text-align: center;
 }
 
-.ine-image {
-  margin-top: 0.5rem;
-  width: 100%;
-  max-width: 400px;
-  border: 1px solid #ccc;
+button:hover {
+  background-color: #1565C0;
+}
+
+.ine-example img {
+  max-width: 100%;
+  margin-top: 1rem;
+  border: 2px solid #ccc;
   border-radius: 4px;
 }
