@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import "./index.css";
-import logo from "../public/logo.png";
 
 export default function App() {
   const [formData, setFormData] = useState({
@@ -17,16 +16,40 @@ export default function App() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Datos enviados:", formData);
-    // Aquí puedes agregar la llamada a tu API backend
+    try {
+      const res = await fetch("/api/encuestas", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+      const data = await res.json();
+      if (data.status === "ok") {
+        alert("Encuesta guardada correctamente");
+        setFormData({
+          first_initial: "",
+          last_initial: "",
+          mother_initial: "",
+          section: "",
+          cp: "",
+          answer: ""
+        });
+      } else {
+        alert("Error al guardar encuesta");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error al guardar encuesta");
+    }
   };
 
   return (
     <div className="container">
       <form onSubmit={handleSubmit}>
-        <img src={logo} alt="Logo" />
+        <img src="/logo.png" alt="Logo" className="logo" />
+        <h2>Encuesta Presidente Municipal</h2>
+
         <div className="initials">
           <input
             type="text"
@@ -56,6 +79,7 @@ export default function App() {
             required
           />
         </div>
+
         <div className="fields">
           <label>
             Sección INE:
@@ -80,6 +104,7 @@ export default function App() {
             />
           </label>
         </div>
+
         <div className="question">
           <p>¿Quieres que siga de presidente municipal, Luis Ernesto Munguia Gonzales?</p>
           <label>
@@ -92,7 +117,7 @@ export default function App() {
               required
             /> Si
           </label>
-          <label>
+          <label style={{ marginLeft: "1rem" }}>
             <input
               type="radio"
               name="answer"
@@ -102,6 +127,7 @@ export default function App() {
             /> No
           </label>
         </div>
+
         <button type="submit">Enviar</button>
       </form>
     </div>
