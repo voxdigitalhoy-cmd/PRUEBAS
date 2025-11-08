@@ -1,7 +1,5 @@
 import React, { useState } from "react";
 import "./index.css";
-import logo from "../public/logo.png";
-import ineExample from "../public/ine_example.png";
 
 export default function App() {
   const [formData, setFormData] = useState({
@@ -12,69 +10,62 @@ export default function App() {
     cp: "",
     answer: "",
   });
-
   const [showINE, setShowINE] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value.toUpperCase() }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log("Datos enviados:", formData);
-    alert("Encuesta enviada!");
-    setFormData({
-      first_initial: "",
-      last_initial: "",
-      mother_initial: "",
-      section: "",
-      cp: "",
-      answer: "",
-    });
+    alert("Formulario enviado!"); // temporal
   };
 
   return (
-    <div className="container">
-      <header>
-        <img src={logo} alt="Logo" className="logo" />
-        <h1>ENCUESTAS</h1>
-        <h2>VOX DIGITAL HOY</h2>
-        <p className="subtitulo">La Voz de la Información en Línea</p>
+    <div className="app-container">
+      {/* Encabezado con logo y título */}
+      <header className="app-header">
+        <img src="/logo.png" alt="Logo" className="logo" />
+        <h1>ENCUESTAS VOX DIGITAL HOY</h1>
+        <p className="subtitle">La Voz de la Información en Línea</p>
       </header>
 
-      <form onSubmit={handleSubmit}>
-        <div className="field">
+      {/* Formulario */}
+      <form onSubmit={handleSubmit} className="survey-form">
+        <div className="field-group">
           <label>Código Postal:</label>
           <input
             type="text"
             name="cp"
+            maxLength="10"
             value={formData.cp}
             onChange={handleChange}
-            maxLength={10}
             required
           />
         </div>
 
-        <div className="field">
+        <div className="field-group">
           <label>Número de INE (OCR):</label>
           <input
             type="text"
-            name="ocr"
-            placeholder="13 letras/números"
-            maxLength={13}
+            name="ine_number"
+            maxLength="13"
+            value={formData.ine_number}
+            onChange={handleChange}
           />
         </div>
 
-        <div className="initials">
+        <div className="initials-group">
           <div>
             <label>Inicial Primer Nombre:</label>
             <input
               type="text"
               name="first_initial"
+              maxLength="1"
               value={formData.first_initial}
               onChange={handleChange}
-              maxLength={1}
               required
             />
           </div>
@@ -83,9 +74,9 @@ export default function App() {
             <input
               type="text"
               name="last_initial"
+              maxLength="1"
               value={formData.last_initial}
               onChange={handleChange}
-              maxLength={1}
               required
             />
           </div>
@@ -94,31 +85,31 @@ export default function App() {
             <input
               type="text"
               name="mother_initial"
+              maxLength="1"
               value={formData.mother_initial}
               onChange={handleChange}
-              maxLength={1}
               required
             />
           </div>
         </div>
 
-        <div className="field">
+        <div className="field-group">
           <label>Sección INE:</label>
           <input
             type="text"
             name="section"
+            maxLength="6"
             value={formData.section}
             onChange={handleChange}
-            maxLength={6}
             required
           />
         </div>
 
-        <div className="field">
+        <div className="field-group">
           <label>Sexo:</label>
           <select
-            name="answer"
-            value={formData.answer}
+            name="sex"
+            value={formData.sex}
             onChange={handleChange}
             required
           >
@@ -128,44 +119,48 @@ export default function App() {
           </select>
         </div>
 
-        <div className="field">
-          <p>¿Quieres que siga como presidente municipal, Luis Ernesto Munguia Gonzales?</p>
-          <label>
-            <input
-              type="radio"
-              name="answer"
-              value="Sí"
-              checked={formData.answer === "Sí"}
-              onChange={handleChange}
-              required
-            /> Sí
-          </label>
-          <label style={{ marginLeft: "1rem" }}>
-            <input
-              type="radio"
-              name="answer"
-              value="No"
-              checked={formData.answer === "No"}
-              onChange={handleChange}
-            /> No
-          </label>
+        <div className="field-group">
+          <label>¿Quieres que siga como presidente municipal, Luis Ernesto Munguia Gonzales?</label>
+          <div>
+            <label>
+              <input
+                type="radio"
+                name="answer"
+                value="Si"
+                checked={formData.answer === "Si"}
+                onChange={handleChange}
+                required
+              />{" "}
+              Sí
+            </label>
+            <label style={{ marginLeft: "1rem" }}>
+              <input
+                type="radio"
+                name="answer"
+                value="No"
+                checked={formData.answer === "No"}
+                onChange={handleChange}
+              />{" "}
+              No
+            </label>
+          </div>
         </div>
+
+        <button type="button" onClick={() => setShowINE(!showINE)}>
+          Ver ejemplo INE
+        </button>
+
+        {showINE && (
+          <div className="ine-example">
+            <img
+              src="/ine_example.png"
+              alt="Ejemplo INE"
+            />
+          </div>
+        )}
 
         <button type="submit">Enviar Encuesta</button>
-
-        <div className="ine-help">
-          <button
-            type="button"
-            onClick={() => setShowINE(!showINE)}
-          >
-            Ver ejemplo INE (OCR)
-          </button>
-          {showINE && (
-            <img src={ineExample} alt="Ejemplo INE" className="ine-image" />
-          )}
-        </div>
       </form>
     </div>
   );
 }
-
