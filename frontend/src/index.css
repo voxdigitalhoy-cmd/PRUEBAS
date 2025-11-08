@@ -1,96 +1,79 @@
 body {
-  margin: 0;
   font-family: Arial, sans-serif;
-  background-color: #f0f2f5; /* Combina con tu logo */
-  color: #333;
+  background-color: #f7f7f7; /* Cambiar para combinar con logo */
+  margin: 0;
+  padding: 0;
 }
 
 .container {
   max-width: 600px;
-  margin: 0 auto;
-  padding: 1rem;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
 
-.header {
+header {
   text-align: center;
-  margin-bottom: 2rem;
 }
 
-.header .logo {
+.logo {
   width: 120px;
-  margin-bottom: 0.5rem;
+  margin-bottom: 10px;
 }
 
-.header h1 {
-  margin: 0;
-  font-size: 2rem;
-}
-
-.header h2 {
-  margin: 0;
-  font-size: 1.2rem;
+.subtitle {
+  font-size: 0.9em;
   color: #555;
 }
 
-.header small {
-  color: #777;
+form {
+  margin-top: 20px;
 }
 
-.survey-form {
-  background-color: white;
-  padding: 1rem 2rem;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-}
-
-.field-row {
+.field {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
+  margin-bottom: 15px;
 }
 
-.field-row label {
+.field label {
+  width: 180px;
+  font-weight: bold;
+}
+
+.field input, .field select {
   flex: 1;
-}
-
-.field-row input,
-.field-row select {
-  flex: 1;
-  padding: 0.3rem 0.5rem;
-  font-size: 1rem;
-  margin-left: 1rem;
-}
-
-.ine-image {
-  text-align: center;
-  margin: 1rem 0;
-}
-
-.ine-image img {
-  width: 100%;
-  max-width: 300px;
-  cursor: pointer;
-  border: 2px solid #ccc;
+  padding: 5px 10px;
+  font-size: 1em;
+  border: 1px solid #ccc;
   border-radius: 5px;
 }
 
+.ine-example {
+  display: block;
+  margin-top: 5px;
+  max-width: 100%;
+  height: auto;
+}
+
 .question {
-  margin: 1.5rem 0;
-  font-size: 1.2rem;
+  flex-direction: column;
+}
+
+.question p {
+  font-size: 1.2em;
   font-weight: bold;
 }
 
 .question label {
-  margin-right: 1rem;
-  font-weight: normal;
+  margin-right: 10px;
 }
 
 button {
-  width: 100%;
-  padding: 0.7rem;
-  font-size: 1rem;
-  font-weight: bold;
+  padding: 10px 20px;
+  font-size: 1.1em;
   background-color: #007bff;
   color: white;
   border: none;
@@ -102,57 +85,31 @@ button:hover {
   background-color: #0056b3;
 }
 
-/* Resultados */
 .results {
-  margin-top: 2rem;
-}
-
-.bar-container {
-  background-color: #ddd;
-  border-radius: 5px;
-  margin: 0.5rem 0;
-  height: 30px;
-  width: 100%;
-  overflow: hidden;
+  margin-top: 30px;
 }
 
 .bar {
+  width: 100%;
+  background-color: #ddd;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 10px;
+  height: 25px;
+}
+
+.fill {
   height: 100%;
+  line-height: 25px;
   color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  text-align: center;
   font-weight: bold;
-  border-radius: 5px;
 }
 
-.bar.yes {
-  background-color: #28a745; /* Verde */
+.fill.si {
+  background-color: #28a745;
 }
 
-.bar.no {
-  background-color: #dc3545; /* Rojo */
-}
-
-/* Responsivo */
-@media (max-width: 500px) {
-  .field-row {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .field-row input,
-  .field-row select {
-    margin-left: 0;
-    width: 100%;
-    margin-top: 0.3rem;
-  }
-
-  .question {
-    font-size: 1rem;
-  }
-
-  button {
-    font-size: 0.9rem;
-  }
+.fill.no {
+  background-color: #dc3545;
 }
