@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react";
+import io from "socket.io-client";
 import "./index.css";
 import logo from "../public/logo.png";
 import ineExample from "../public/ine_example.png";
+
+const socket = io("http://localhost:10000"); // Cambiar al URL de tu servidor en Render
 
 export default function App() {
   const [formData, setFormData] = useState({
@@ -15,24 +18,11 @@ export default function App() {
     answer: ""
   });
 
-  const [results, setResults] = useState({
-    Si: 0,
-    No: 0,
-    total: 0
-  });
+  const [results, setResults] = useState({ Si: 0, No: 0, total: 0 });
 
-  // Simulación de votos en tiempo real
   useEffect(() => {
-    const interval = setInterval(() => {
-      const randomVote = Math.random() > 0.5 ? "Si" : "No";
-      setResults(prev => ({
-        ...prev,
-        [randomVote]: prev[randomVote] + 1,
-        total: prev.total + 1
-      }));
-    }, 5000);
-
-    return () => clearInterval(interval);
+    socket.on("updateResults", (data) => setResults(data));
+    return () => socket.off("updateResults");
   }, []);
 
   const handleChange = (e) => {
@@ -40,16 +30,26 @@ export default function App() {
     setFormData(prev => ({ ...prev, [name]: value.toUpperCase() }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (formData.answer) {
-      setResults(prev => ({
-        ...prev,
-        [formData.answer]: prev[formData.answer] + 1,
-        total: prev.total + 1
-      }));
-    }
-    alert("Encuesta enviada!");
+    if (!formData.answer) return;
+
+    await fetch("/api/encuestas", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        ine: formData.ocr,
+        first_initial: formData.first_initial,
+        last_initial: formData.last_initial,
+        mother_initial: formData.mother_initial,
+        section: formData.section,
+        cp: formData.cp,
+        context: "Municipio",
+        question: "¿Quieres que siga como presidente municipal, Luis Ernesto Munguia Gonzales?",
+        answer: formData.answer
+      })
+    });
+
     setFormData({
       cp: "",
       section: "",
@@ -62,9 +62,8 @@ export default function App() {
     });
   };
 
-  const percentage = (vote) => {
-    return results.total === 0 ? 0 : ((results[vote] / results.total) * 100).toFixed(1);
-  };
+  const percentage = (vote) =>
+    results.total === 0 ? 0 : ((results[vote] / results.total) * 100).toFixed(1);
 
   return (
     <div className="container">
