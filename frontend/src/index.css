@@ -1,123 +1,101 @@
-.container {
-  max-width: 420px;
-  margin: 2rem auto;
-  padding: 1rem 2rem;
-  background: #fff;
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgb(0 0 0 / 0.1);
+body {
   font-family: Arial, sans-serif;
-}
-
-.header {
-  text-align: center;
-  margin-bottom: 1.5rem;
-}
-
-.logo {
-  width: 120px;
-  margin-bottom: 0.5rem;
-}
-
-.main-title {
-  font-weight: 900;
-  font-size: 2.5rem;
+  background-color: #f5f5f5;
   margin: 0;
-  letter-spacing: 0.1em;
-}
-
-.first-letter {
-  font-size: 3.2rem;
-  font-weight: 900;
-  color: #0055a5; /* color especial para la E */
-  margin-right: 0.1rem;
-}
-
-.sub-title {
-  font-size: 1.8rem;
-  font-weight: 700;
-  margin: 0;
-  color: #003366;
-  letter-spacing: 0.05em;
-}
-
-.small-text {
-  font-size: 0.75rem;
-  font-style: italic;
-  color: #666;
-  margin-top: 0.3rem;
-}
-
-form label {
-  display: block;
-  margin-bottom: 0.8rem;
-  font-weight: 600;
-  font-size: 1rem;
-  color: #222;
-}
-
-form input[type="text"],
-form select {
-  width: 100%;
-  padding: 6px 8px;
-  margin-top: 0.2rem;
-  font-size: 1rem;
-  border: 1.8px solid #ccc;
-  border-radius: 6px;
-  box-sizing: border-box;
-}
-
-.initials-row {
+  padding: 0;
   display: flex;
-  justify-content: space-between;
-  gap: 1rem;
+  justify-content: center;
+}
+
+.container {
+  width: 100%;
+  max-width: 500px;
+  padding: 1rem;
+}
+
+header {
+  text-align: center;
   margin-bottom: 1rem;
 }
 
-.initials-row label {
-  flex: 1;
+header .logo {
+  width: 100px;
 }
 
-.initials-row input {
+header h1 {
+  margin: 0.2rem 0;
+}
+
+header .subtitle {
+  font-size: 0.8rem;
+  color: #555;
+}
+
+form {
+  background-color: #fff;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+label {
+  display: block;
+  margin-bottom: 0.3rem;
+}
+
+input[type="text"], select {
   width: 100%;
-  padding: 6px 8px;
+  padding: 0.4rem;
   font-size: 1rem;
-  border: 1.8px solid #ccc;
-  border-radius: 6px;
-  text-transform: uppercase;
   box-sizing: border-box;
 }
 
-.question {
-  margin-top: 1rem;
-  font-weight: 700;
-  color: #007a00;
+input.initial {
+  width: 2rem;
+  display: inline-block;
+  text-align: center;
+  margin-right: 0.5rem;
 }
 
-.question p {
-  margin-bottom: 0.5rem;
+.initials input {
+  width: 2.5rem;
+  text-align: center;
+  margin-right: 0.5rem;
 }
 
-.question label {
-  margin-right: 1.5rem;
-  font-weight: normal;
-  color: #000;
+.radio-group label {
+  margin-right: 1rem;
 }
 
 button {
-  margin-top: 1.2rem;
-  width: 100%;
-  padding: 0.7rem;
-  background-color: #004aad;
-  color: white;
-  font-weight: 700;
-  font-size: 1.1rem;
-  border: none;
-  border-radius: 8px;
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
   cursor: pointer;
-  transition: background-color 0.3s ease;
 }
 
-button:hover {
-  background-color: #00307f;
+.message {
+  margin-top: 0.8rem;
+  color: green;
+  font-weight: bold;
 }
+
+@media (max-width: 600px) {
+  .container {
+    padding: 0.5rem;
+  }
+
+  .initials input {
+    width: 2rem;
+    margin-right: 0.3rem;
+  }
+
+  button {
+    width: 100%;
+  }
+}
+
 
