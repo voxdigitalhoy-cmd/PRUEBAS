@@ -13,6 +13,9 @@ export default function App() {
     answer: ""
   });
 
+  // Simulación de resultados de la encuesta
+  const [results, setResults] = useState({ yes: 0, no: 0 });
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -21,8 +24,21 @@ export default function App() {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log("Datos enviados:", formData);
-    // Aquí puedes agregar la llamada a tu backend
+
+    // Actualiza resultados simulando que se suman los votos
+    if (formData.answer === "Sí") {
+      setResults((prev) => ({ ...prev, yes: prev.yes + 1 }));
+    } else if (formData.answer === "No") {
+      setResults((prev) => ({ ...prev, no: prev.no + 1 }));
+    }
+
+    // Limpiar la respuesta después de enviar
+    setFormData({ ...formData, answer: "" });
   };
+
+  const totalVotes = results.yes + results.no;
+  const yesPercent = totalVotes ? ((results.yes / totalVotes) * 100).toFixed(0) : 0;
+  const noPercent = totalVotes ? ((results.no / totalVotes) * 100).toFixed(0) : 0;
 
   return (
     <div className="container">
@@ -152,7 +168,15 @@ export default function App() {
 
         <button type="submit">Enviar Encuesta</button>
       </form>
+
+      {/* Resultados */}
+      {totalVotes > 0 && (
+        <div className="results">
+          <h3>Resultados</h3>
+          <p>Sí: {results.yes} votos ({yesPercent}%)</p>
+          <p>No: {results.no} votos ({noPercent}%)</p>
+        </div>
+      )}
     </div>
   );
 }
-
