@@ -27,6 +27,7 @@ const pool = new Pool({
 
 let liveResults = { Si: 0, No: 0, total: 0 };
 
+// Test de conexión
 app.get("/api/test", async (req, res) => {
   try {
     const result = await pool.query("SELECT NOW()");
@@ -37,17 +38,13 @@ app.get("/api/test", async (req, res) => {
   }
 });
 
+// Guardar encuesta
 app.post("/api/encuestas", async (req, res) => {
-  const {
-    ine, first_initial, last_initial, mother_initial,
-    section, cp, context, question, answer
-  } = req.body;
+  const { ine, first_initial, last_initial, mother_initial, section, cp, context, question, answer } = req.body;
 
   try {
-    let personResult = await pool.query(
-      "SELECT id FROM persons WHERE identifier=$1",
-      [ine]
-    );
+    // Verificar persona
+    let personResult = await pool.query("SELECT id FROM persons WHERE identifier=$1", [ine]);
     let personId;
     if (personResult.rows.length === 0) {
       const insertPerson = await pool.query(
@@ -59,11 +56,8 @@ app.post("/api/encuestas", async (req, res) => {
       personId = personResult.rows[0].id;
     }
 
-    const surveyResult = await pool.query(
-      "SELECT id FROM surveys WHERE title=$1 LIMIT 1",
-      [context]
-    );
-
+    // Verificar encuesta
+    const surveyResult = await pool.query("SELECT id FROM surveys WHERE title=$1 LIMIT 1", [context]);
     let surveyId;
     if (surveyResult.rows.length === 0) {
       const insertSurvey = await pool.query(
@@ -78,16 +72,14 @@ app.post("/api/encuestas", async (req, res) => {
       );
     } else surveyId = surveyResult.rows[0].id;
 
+    // Guardar respuesta
     const responseInsert = await pool.query(
       "INSERT INTO responses (survey_id, person_id, cp) VALUES ($1,$2,$3) RETURNING id",
       [surveyId, personId, cp]
     );
     const responseId = responseInsert.rows[0].id;
 
-    const questionResult = await pool.query(
-      "SELECT id FROM questions WHERE survey_id=$1 LIMIT 1",
-      [surveyId]
-    );
+    const questionResult = await pool.query("SELECT id FROM questions WHERE survey_id=$1 LIMIT 1", [surveyId]);
     const questionId = questionResult.rows[0].id;
 
     await pool.query(
@@ -95,6 +87,7 @@ app.post("/api/encuestas", async (req, res) => {
       [responseId, questionId, answer]
     );
 
+    // Actualizar resultados en vivo
     if (answer === "Si") liveResults.Si++;
     if (answer === "No") liveResults.No++;
     liveResults.total++;
@@ -108,11 +101,13 @@ app.post("/api/encuestas", async (req, res) => {
   }
 });
 
+// Socket.IO
 io.on("connection", (socket) => {
   console.log("Cliente conectado:", socket.id);
   socket.emit("updateResults", liveResults);
 });
 
+// Servir frontend
 app.use(express.static(path.join(__dirname, "../frontend/dist")));
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
