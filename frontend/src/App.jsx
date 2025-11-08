@@ -44,23 +44,19 @@ export default function App() {
           />
         </div>
 
-        <div className="form-group">
+        <div className="form-group ine-group">
           <label>Número de INE (OCR):</label>
-          <input
-            type="text"
-            name="ine_number"
-            maxLength={13}
-            value={formData.ine_number}
-            onChange={handleChange}
-            required
-          />
-          <button
-            type="button"
-            className="help-btn"
-            onClick={() => setShowModal(true)}
-          >
-            ?
-          </button>
+          <div className="input-with-icon">
+            <input
+              type="text"
+              name="ine_number"
+              maxLength={13}
+              value={formData.ine_number}
+              onChange={handleChange}
+              required
+            />
+            <span className="info-icon" onClick={() => setShowModal(true)}>❔</span>
+          </div>
         </div>
 
         <div className="form-group">
