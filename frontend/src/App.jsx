@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import logo from "../public/logo.png"; // asegúrate que el logo esté en /frontend/public/logo.png
+import logo from "/logo.png"; // ✅ ruta correcta para Vite
 
 export default function App() {
   const [initials, setInitials] = useState({ first: "", last: "", mother: "" });
