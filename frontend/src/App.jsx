@@ -13,6 +13,7 @@ export default function App() {
     sex: "",
     answer: ""
   });
+  const [showModal, setShowModal] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -56,7 +57,7 @@ export default function App() {
           <button
             type="button"
             className="help-btn"
-            onClick={() => window.open("/ine_example.png", "_blank")}
+            onClick={() => setShowModal(true)}
           >
             ?
           </button>
@@ -142,6 +143,17 @@ export default function App() {
 
         <button type="submit">Enviar</button>
       </form>
+
+      {/* Modal para mostrar imagen */}
+      {showModal && (
+        <div className="modal-overlay" onClick={() => setShowModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <h2>Ejemplo OCR en INE</h2>
+            <img src="/ine_example.png" alt="Ejemplo INE OCR" className="modal-image" />
+            <button onClick={() => setShowModal(false)}>Cerrar</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
