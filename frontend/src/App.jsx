@@ -4,7 +4,8 @@ import "./index.css";
 import logo from "../public/logo.png";
 import ineExample from "../public/ine_example.png";
 
-const socket = io("http://localhost:10000"); // Cambiar al URL de tu servidor en Render
+// Con io() sin URL para que funcione en Render automáticamente
+const socket = io();
 
 export default function App() {
   const [formData, setFormData] = useState({
