@@ -1,145 +1,110 @@
 import React, { useState } from "react";
 import "./index.css";
+import logo from "../public/logo.png";
 
-function App() {
-  const [firstInitial, setFirstInitial] = useState("");
-  const [lastInitial, setLastInitial] = useState("");
-  const [motherInitial, setMotherInitial] = useState("");
-  const [section, setSection] = useState("");
-  const [cp, setCp] = useState("");
-  const [answer, setAnswer] = useState("");
-  const [message, setMessage] = useState("");
+export default function App() {
+  const [formData, setFormData] = useState({
+    first_initial: "",
+    last_initial: "",
+    mother_initial: "",
+    section: "",
+    cp: "",
+    answer: ""
+  });
 
-  const handleSubmit = async (e) => {
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = (e) => {
     e.preventDefault();
-
-    // Puedes agregar validaciones aquí
-    if (!firstInitial || !lastInitial || !motherInitial || !section || !cp || !answer) {
-      setMessage("Por favor completa todos los campos");
-      return;
-    }
-
-    try {
-      const response = await fetch("/api/encuestas", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          first_initial: firstInitial,
-          last_initial: lastInitial,
-          mother_initial: motherInitial,
-          section,
-          cp,
-          answer,
-        }),
-      });
-
-      const data = await response.json();
-      if (data.status === "ok") {
-        setMessage("Encuesta guardada correctamente");
-        // Resetear campos
-        setFirstInitial("");
-        setLastInitial("");
-        setMotherInitial("");
-        setSection("");
-        setCp("");
-        setAnswer("");
-      } else {
-        setMessage("Error al guardar la encuesta");
-      }
-    } catch (error) {
-      console.error(error);
-      setMessage("Error al guardar la encuesta");
-    }
+    console.log("Datos enviados:", formData);
+    // Aquí puedes agregar la llamada a tu API backend
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <img src="/logo.png" alt="Logo" />
-      <h2>¿Quieres que siga de presidente municipal, Luis Ernesto Munguia Gonzales?</h2>
-
-      {/* Iniciales */}
-      <div className="form-group">
-        <label>Iniciales</label>
-        <div className="initial-container">
+    <div className="container">
+      <form onSubmit={handleSubmit}>
+        <img src={logo} alt="Logo" />
+        <div className="initials">
           <input
             type="text"
+            name="first_initial"
             maxLength="1"
-            className="initial"
-            placeholder="P"
-            value={firstInitial}
-            onChange={(e) => setFirstInitial(e.target.value.toUpperCase())}
+            placeholder="F"
+            value={formData.first_initial}
+            onChange={handleChange}
+            required
           />
           <input
             type="text"
+            name="last_initial"
             maxLength="1"
-            className="initial"
             placeholder="L"
-            value={lastInitial}
-            onChange={(e) => setLastInitial(e.target.value.toUpperCase())}
+            value={formData.last_initial}
+            onChange={handleChange}
+            required
           />
           <input
             type="text"
+            name="mother_initial"
             maxLength="1"
-            className="initial"
             placeholder="M"
-            value={motherInitial}
-            onChange={(e) => setMotherInitial(e.target.value.toUpperCase())}
+            value={formData.mother_initial}
+            onChange={handleChange}
+            required
           />
         </div>
-      </div>
-
-      {/* Sección / INE */}
-      <div className="form-group">
-        <label>Sección / INE</label>
-        <input
-          type="text"
-          maxLength="6"
-          value={section}
-          onChange={(e) => setSection(e.target.value)}
-        />
-      </div>
-
-      {/* Código Postal */}
-      <div className="form-group">
-        <label>Código Postal</label>
-        <input
-          type="text"
-          maxLength="10"
-          value={cp}
-          onChange={(e) => setCp(e.target.value)}
-        />
-      </div>
-
-      {/* Respuesta */}
-      <div className="form-group">
-        <label>Respuesta</label>
-        <div>
+        <div className="fields">
           <label>
+            Sección INE:
             <input
-              type="radio"
-              value="Sí"
-              checked={answer === "Sí"}
-              onChange={(e) => setAnswer(e.target.value)}
+              type="text"
+              name="section"
+              maxLength="6"
+              value={formData.section}
+              onChange={handleChange}
+              required
             />
-            Sí
           </label>
           <label>
+            Código Postal:
             <input
-              type="radio"
-              value="No"
-              checked={answer === "No"}
-              onChange={(e) => setAnswer(e.target.value)}
+              type="text"
+              name="cp"
+              maxLength="10"
+              value={formData.cp}
+              onChange={handleChange}
+              required
             />
-            No
           </label>
         </div>
-      </div>
-
-      <button type="submit">Enviar</button>
-
-      {message && <p>{message}</p>}
-    </form>
+        <div className="question">
+          <p>¿Quieres que siga de presidente municipal, Luis Ernesto Munguia Gonzales?</p>
+          <label>
+            <input
+              type="radio"
+              name="answer"
+              value="Si"
+              checked={formData.answer === "Si"}
+              onChange={handleChange}
+              required
+            /> Si
+          </label>
+          <label>
+            <input
+              type="radio"
+              name="answer"
+              value="No"
+              checked={formData.answer === "No"}
+              onChange={handleChange}
+            /> No
+          </label>
+        </div>
+        <button type="submit">Enviar</button>
+      </form>
+    </div>
   );
 }
 
-export default App;
