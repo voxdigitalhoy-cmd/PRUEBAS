@@ -8,53 +8,54 @@ body {
 .container {
   max-width: 500px;
   margin: 2rem auto;
-  background: #fff;
-  padding: 2rem;
-  border-radius: 10px;
+  background: white;
+  padding: 1.5rem;
+  border-radius: 8px;
   box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
 
-.header {
+header {
   text-align: center;
+  margin-bottom: 1rem;
 }
 
-.header img {
-  width: 120px;
+.logo {
+  width: 100px;
+  margin-bottom: 0.5rem;
 }
 
-.header h1 {
+h1 {
   margin: 0;
-  font-size: 2rem;
+  font-size: 1.5rem;
 }
 
-.header h2 {
+h2 {
   margin: 0;
   font-size: 1.2rem;
 }
 
-.header .subtitle {
+.subtitulo {
   font-size: 0.8rem;
   color: #555;
 }
 
-form {
-  margin-top: 1rem;
-}
-
-.field {
+form .field {
   margin-bottom: 1rem;
 }
 
-.field label {
+form label {
   display: block;
   margin-bottom: 0.3rem;
+  font-weight: bold;
 }
 
-.field input,
-.field select {
+form input[type="text"],
+form select {
   width: 100%;
-  padding: 0.4rem;
+  padding: 0.5rem;
   font-size: 1rem;
+  border-radius: 4px;
+  border: 1px solid #ccc;
   box-sizing: border-box;
 }
 
@@ -75,22 +76,21 @@ form {
 }
 
 button {
-  background-color: #007bff;
-  color: white;
-  border: none;
-  padding: 0.6rem 1rem;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  margin-top: 0.5rem;
   cursor: pointer;
-  border-radius: 5px;
 }
 
-button:hover {
-  background-color: #0056b3;
+.ine-help {
+  margin-top: 1rem;
+  text-align: center;
 }
 
-.ine-example {
+.ine-image {
   margin-top: 0.5rem;
   width: 100%;
+  max-width: 400px;
   border: 1px solid #ccc;
-  border-radius: 5px;
+  border-radius: 4px;
 }
-
