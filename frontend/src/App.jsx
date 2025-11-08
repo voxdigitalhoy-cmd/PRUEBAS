@@ -1,88 +1,132 @@
-// src/App.jsx
-import React, { useState, useEffect } from "react";
-import "./index.css";
+import React, { useState } from "react";
+import logo from "../public/logo.png"; // asegúrate que el logo esté en /frontend/public/logo.png
 
-function App() {
-  const [nombre, setNombre] = useState("");
-  const [edad, setEdad] = useState("");
-  const [preferencia, setPreferencia] = useState("");
-  const [encuestas, setEncuestas] = useState([]);
+export default function App() {
+  const [initials, setInitials] = useState({ first: "", last: "", mother: "" });
+  const [answer, setAnswer] = useState("");
+  const [submitted, setSubmitted] = useState(false);
 
-  // Obtener encuestas al cargar la página
-  useEffect(() => {
-    fetch("/api/encuestas")
-      .then((res) => res.json())
-      .then((data) => setEncuestas(data))
-      .catch((err) => console.error("Error fetching encuestas:", err));
-  }, []);
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setInitials({ ...initials, [name]: value.toUpperCase().slice(0, 1) });
+  };
 
-  // Guardar nueva encuesta
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!nombre || !edad || !preferencia) {
-      alert("Todos los campos son obligatorios");
+
+    if (!initials.first || !initials.last || !initials.mother || !answer) {
+      alert("Por favor completa tus iniciales y selecciona una respuesta.");
       return;
     }
 
+    const data = {
+      initials: `${initials.first}${initials.last}${initials.mother}`,
+      answer,
+    };
+
     try {
-      const res = await fetch("/api/encuestas", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/encuestas`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ nombre, edad, preferencia }),
+        body: JSON.stringify(data),
       });
-      const data = await res.json();
 
-      if (data.status === "ok") {
-        setEncuestas([data.data, ...encuestas]);
-        setNombre("");
-        setEdad("");
-        setPreferencia("");
-      } else {
-        alert("Error al guardar encuesta");
-      }
-    } catch (error) {
-      console.error("Error saving encuesta:", error);
-      alert("Error al guardar encuesta");
+      if (!res.ok) throw new Error("Error al guardar encuesta");
+
+      setSubmitted(true);
+    } catch (err) {
+      alert("❌ Error al guardar encuesta");
+      console.error(err);
     }
   };
 
   return (
-    <div className="App">
+    <div
+      style={{
+        textAlign: "center",
+        fontFamily: "Arial, sans-serif",
+        padding: "30px",
+      }}
+    >
+      <img
+        src={logo}
+        alt="Logo Vox Digital Hoy"
+        style={{ width: "150px", marginBottom: "20px" }}
+      />
       <h1>Encuestas Vox Digital Hoy</h1>
 
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          placeholder="Nombre"
-          value={nombre}
-          onChange={(e) => setNombre(e.target.value)}
-        />
-        <input
-          type="number"
-          placeholder="Edad"
-          value={edad}
-          onChange={(e) => setEdad(e.target.value)}
-        />
-        <input
-          type="text"
-          placeholder="Preferencia"
-          value={preferencia}
-          onChange={(e) => setPreferencia(e.target.value)}
-        />
-        <button type="submit">Enviar</button>
-      </form>
+      {!submitted ? (
+        <form onSubmit={handleSubmit} style={{ marginTop: "20px" }}>
+          <div style={{ marginBottom: "10px" }}>
+            <input
+              type="text"
+              name="first"
+              placeholder="Inicial Nombre"
+              value={initials.first}
+              onChange={handleChange}
+              style={{ width: "80px", textAlign: "center", marginRight: "5px" }}
+            />
+            <input
+              type="text"
+              name="last"
+              placeholder="Inicial Paterno"
+              value={initials.last}
+              onChange={handleChange}
+              style={{ width: "80px", textAlign: "center", marginRight: "5px" }}
+            />
+            <input
+              type="text"
+              name="mother"
+              placeholder="Inicial Materno"
+              value={initials.mother}
+              onChange={handleChange}
+              style={{ width: "80px", textAlign: "center" }}
+            />
+          </div>
 
-      <h2>Encuestas Recientes</h2>
-      <ul>
-        {encuestas.map((encuesta) => (
-          <li key={encuesta.id}>
-            {encuesta.nombre} ({encuesta.edad}) - {encuesta.preferencia}
-          </li>
-        ))}
-      </ul>
+          <h2>¿Quieres que siga de presidente municipal, Luis Ernesto Munguía González?</h2>
+
+          <div style={{ marginTop: "10px" }}>
+            <label style={{ marginRight: "10px" }}>
+              <input
+                type="radio"
+                name="answer"
+                value="Sí"
+                onChange={(e) => setAnswer(e.target.value)}
+              />{" "}
+              Sí
+            </label>
+            <label>
+              <input
+                type="radio"
+                name="answer"
+                value="No"
+                onChange={(e) => setAnswer(e.target.value)}
+              />{" "}
+              No
+            </label>
+          </div>
+
+          <button
+            type="submit"
+            style={{
+              marginTop: "20px",
+              padding: "10px 20px",
+              backgroundColor: "#007bff",
+              color: "white",
+              border: "none",
+              borderRadius: "5px",
+              cursor: "pointer",
+            }}
+          >
+            Enviar
+          </button>
+        </form>
+      ) : (
+        <h3 style={{ color: "green", marginTop: "20px" }}>
+          ✅ Gracias por participar.
+        </h3>
+      )}
     </div>
   );
 }
-
-export default App;
-
