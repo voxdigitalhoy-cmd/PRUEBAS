@@ -4,11 +4,18 @@ import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
 import pkg from "pg";
+import http from "http";
+import { Server } from "socket.io";
 
 dotenv.config();
-
 const { Pool } = pkg;
+
 const app = express();
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: { origin: "*" }
+});
+
 app.use(cors());
 app.use(express.json());
 
@@ -19,6 +26,9 @@ const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: { rejectUnauthorized: false }
 });
+
+// Resultados en memoria para mostrar en tiempo real
+let liveResults = { Si: 0, No: 0, total: 0 };
 
 // 🔹 Ruta de prueba
 app.get("/api/test", async (req, res) => {
@@ -40,7 +50,7 @@ app.post("/api/encuestas", async (req, res) => {
     mother_initial,
     section,
     cp,
-    context, // Ej: municipio, colonia, estado, país
+    context,
     question,
     answer
   } = req.body;
@@ -104,11 +114,24 @@ app.post("/api/encuestas", async (req, res) => {
       [responseId, questionId, answer]
     );
 
-    res.json({ status: "ok", message: "Encuesta guardada correctamente" });
+    // 🔹 Actualizar resultados en tiempo real
+    if (answer === "Si") liveResults.Si++;
+    if (answer === "No") liveResults.No++;
+    liveResults.total++;
+
+    io.emit("updateResults", liveResults);
+
+    res.json({ status: "ok", message: "Encuesta guardada correctamente", results: liveResults });
   } catch (error) {
     console.error("❌ Error al guardar encuesta:", error);
     res.status(500).json({ error: "Error al guardar encuesta" });
   }
+});
+
+// Socket.IO conexión
+io.on("connection", (socket) => {
+  console.log("Cliente conectado:", socket.id);
+  socket.emit("updateResults", liveResults);
 });
 
 // ✅ Servir frontend
@@ -119,7 +142,6 @@ app.get("*", (req, res) => {
 
 // 🔹 Iniciar servidor
 const PORT = process.env.PORT || 10000;
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`✅ Server listening on port ${PORT}`);
 });
-
