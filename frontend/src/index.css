@@ -1,7 +1,7 @@
 body {
   margin: 0;
   font-family: Arial, sans-serif;
-  background-color: #f4f4f4; /* Cambiar según color del logo */
+  background-color: #e1f0f8; /* Fondo combinado con color del logo */
 }
 
 .container {
@@ -20,8 +20,9 @@ header {
 }
 
 .subtitle {
-  font-size: 0.8rem;
+  font-size: 0.9rem;
   color: #555;
+  margin-top: 5px;
 }
 
 .field {
@@ -44,25 +45,46 @@ header {
   text-align: center;
 }
 
+.initials-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.initials-group .field {
+  margin-bottom: 10px;
+}
+
 .question {
+  display: flex;
   flex-direction: column;
   align-items: flex-start;
+  margin-top: 20px;
 }
 
 .question p {
-  font-size: 1.2rem;
+  font-size: 1.3rem;
   font-weight: bold;
+  margin-bottom: 10px;
 }
 
 .question label {
   margin-right: 15px;
+  font-size: 1.1rem;
 }
 
 button {
-  padding: 10px 20px;
+  padding: 12px 25px;
   font-size: 1rem;
   margin-top: 15px;
   cursor: pointer;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+}
+
+button:hover {
+  background-color: #45a049;
 }
 
 .results {
@@ -72,18 +94,20 @@ button {
 .bar {
   width: 100%;
   background-color: #ddd;
-  height: 25px;
+  height: 30px;
   margin-bottom: 10px;
   border-radius: 5px;
   overflow: hidden;
+  position: relative;
 }
 
 .fill {
   height: 100%;
   color: white;
   text-align: center;
-  line-height: 25px;
+  line-height: 30px;
   font-weight: bold;
+  white-space: nowrap;
 }
 
 .fill.si {
