@@ -12,9 +12,7 @@ const { Pool } = pkg;
 
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server, {
-  cors: { origin: "*" }
-});
+const io = new Server(server, { cors: { origin: "*" } });
 
 app.use(cors());
 app.use(express.json());
@@ -27,10 +25,8 @@ const pool = new Pool({
   ssl: { rejectUnauthorized: false }
 });
 
-// Resultados en memoria para mostrar en tiempo real
 let liveResults = { Si: 0, No: 0, total: 0 };
 
-// 🔹 Ruta de prueba
 app.get("/api/test", async (req, res) => {
   try {
     const result = await pool.query("SELECT NOW()");
@@ -41,22 +37,13 @@ app.get("/api/test", async (req, res) => {
   }
 });
 
-// ✅ Guardar respuesta de encuesta dinámica
 app.post("/api/encuestas", async (req, res) => {
   const {
-    ine,
-    first_initial,
-    last_initial,
-    mother_initial,
-    section,
-    cp,
-    context,
-    question,
-    answer
+    ine, first_initial, last_initial, mother_initial,
+    section, cp, context, question, answer
   } = req.body;
 
   try {
-    // Verificar o crear persona
     let personResult = await pool.query(
       "SELECT id FROM persons WHERE identifier=$1",
       [ine]
@@ -72,7 +59,6 @@ app.post("/api/encuestas", async (req, res) => {
       personId = personResult.rows[0].id;
     }
 
-    // Crear o recuperar encuesta según el contexto
     const surveyResult = await pool.query(
       "SELECT id FROM surveys WHERE title=$1 LIMIT 1",
       [context]
@@ -90,31 +76,25 @@ app.post("/api/encuestas", async (req, res) => {
         "INSERT INTO questions (survey_id, type, text, required, position) VALUES ($1,$2,$3,$4,$5)",
         [surveyId, "single-choice", question, true, 0]
       );
-    } else {
-      surveyId = surveyResult.rows[0].id;
-    }
+    } else surveyId = surveyResult.rows[0].id;
 
-    // Crear respuesta general
     const responseInsert = await pool.query(
       "INSERT INTO responses (survey_id, person_id, cp) VALUES ($1,$2,$3) RETURNING id",
       [surveyId, personId, cp]
     );
     const responseId = responseInsert.rows[0].id;
 
-    // Obtener la pregunta
     const questionResult = await pool.query(
       "SELECT id FROM questions WHERE survey_id=$1 LIMIT 1",
       [surveyId]
     );
     const questionId = questionResult.rows[0].id;
 
-    // Insertar respuesta del usuario
     await pool.query(
       "INSERT INTO answers (response_id, question_id, text_answer) VALUES ($1,$2,$3)",
       [responseId, questionId, answer]
     );
 
-    // 🔹 Actualizar resultados en tiempo real
     if (answer === "Si") liveResults.Si++;
     if (answer === "No") liveResults.No++;
     liveResults.total++;
@@ -128,19 +108,16 @@ app.post("/api/encuestas", async (req, res) => {
   }
 });
 
-// Socket.IO conexión
 io.on("connection", (socket) => {
   console.log("Cliente conectado:", socket.id);
   socket.emit("updateResults", liveResults);
 });
 
-// ✅ Servir frontend
 app.use(express.static(path.join(__dirname, "../frontend/dist")));
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
 });
 
-// 🔹 Iniciar servidor
 const PORT = process.env.PORT || 10000;
 server.listen(PORT, () => {
   console.log(`✅ Server listening on port ${PORT}`);
