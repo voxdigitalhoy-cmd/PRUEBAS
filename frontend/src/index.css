@@ -1,137 +1,28 @@
-/* Reset básico */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: Arial, sans-serif;
+/* Contenedor de barras */
+.bar-container {
+  background-color: #ddd;
+  border-radius: 5px;
+  margin: 0.5rem 0;
+  height: 30px;
+  width: 100%;
+  overflow: hidden;
 }
 
-body {
-  background-color: #f0f4ff; /* Combina con tu logo */
-  color: #333;
-}
-
-/* Contenedor general */
-.container {
-  max-width: 600px;
-  margin: 2rem auto;
-  padding: 1.5rem;
-  background-color: #ffffff;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-}
-
-/* Header con logo y título */
-.header {
-  text-align: center;
-  margin-bottom: 2rem;
-}
-
-.header .logo {
-  max-width: 150px;
-  margin-bottom: 0.5rem;
-}
-
-.header h1 {
-  font-size: 2rem;
-  letter-spacing: 2px;
-  margin-bottom: 0.2rem;
-}
-
-.header h2 {
-  font-size: 1.5rem;
-  margin-bottom: 0.2rem;
-}
-
-.header small {
-  font-size: 0.8rem;
-  color: #555;
-}
-
-/* Filas de campos */
-.field-row {
+.bar {
+  height: 100%;
+  color: white;
   display: flex;
   align-items: center;
-  margin-bottom: 1rem;
-}
-
-.field-row label {
-  width: 180px;
+  justify-content: center;
   font-weight: bold;
-}
-
-.field-row input,
-.field-row select {
-  flex: 1;
-  padding: 0.5rem;
-  font-size: 1rem;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-}
-
-/* Imagen INE */
-.ine-image {
-  text-align: center;
-  margin: 1rem 0;
-}
-
-.ine-image img {
-  max-width: 100%;
-  cursor: pointer;
-  border: 1px solid #ccc;
   border-radius: 5px;
 }
 
-/* Pregunta */
-.question {
-  margin-top: 2rem;
-  margin-bottom: 2rem;
+/* Colores por opción */
+.bar.yes {
+  background-color: #28a745; /* Verde */
 }
 
-.question p {
-  font-size: 1.2rem;
-  font-weight: bold;
-  margin-bottom: 0.5rem;
-}
-
-.question label {
-  display: inline-block;
-  margin-right: 1rem;
-  font-size: 1.1rem;
-}
-
-/* Botón */
-button {
-  display: block;
-  width: 100%;
-  padding: 0.8rem;
-  font-size: 1.1rem;
-  background-color: #3366ff;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-button:hover {
-  background-color: #254eda;
-}
-
-/* Resultados */
-.results {
-  margin-top: 2rem;
-  padding: 1rem;
-  background-color: #e6f0ff;
-  border-radius: 8px;
-  text-align: center;
-}
-
-.results h3 {
-  margin-bottom: 1rem;
-}
-
-.results p {
-  font-size: 1.1rem;
-  margin: 0.3rem 0;
+.bar.no {
+  background-color: #dc3545; /* Rojo */
 }
