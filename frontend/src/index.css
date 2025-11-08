@@ -1,91 +1,96 @@
 body {
-  margin: 0;
   font-family: Arial, sans-serif;
+  background-color: #f4f4f4; /* combina con tu logo */
+  margin: 0;
+  padding: 0;
 }
 
-.app-container {
-  background-color: #0D47A1; /* combina con logo */
-  min-height: 100vh;
-  color: white;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 1rem;
+.container {
+  max-width: 500px;
+  margin: 2rem auto;
+  padding: 1rem 2rem;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
 
-.app-header {
+.header {
   text-align: center;
   margin-bottom: 2rem;
 }
 
-.logo {
+.header img.logo {
   width: 120px;
+}
+
+.header h1 {
+  margin: 0;
+}
+
+.header h2 {
+  margin: 0;
+  font-weight: normal;
+}
+
+.header small {
   display: block;
-  margin: 0 auto;
+  margin-top: 0.5rem;
+  color: #666;
 }
 
-.subtitle {
-  font-size: 0.8rem;
-  margin-top: 0.2rem;
-}
-
-.survey-form {
-  background-color: white;
-  color: black;
-  padding: 2rem;
-  border-radius: 8px;
-  width: 100%;
-  max-width: 500px;
-  box-sizing: border-box;
-}
-
-.field-group,
-.initials-group > div {
+.field-row {
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 1rem;
 }
 
-.initials-group {
-  display: flex;
-  justify-content: space-between;
-}
-
-.initials-group > div {
+.field-row label {
   flex: 1;
-  margin-right: 0.5rem;
 }
 
-.initials-group > div:last-child {
-  margin-right: 0;
+.field-row input,
+.field-row select {
+  width: 120px;
+  padding: 0.25rem;
+  text-transform: uppercase;
 }
 
-input,
-select {
-  padding: 0.5rem;
-  font-size: 1rem;
-  border-radius: 4px;
+.ine-image {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.ine-image img {
+  max-width: 300px;
   border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.question p {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.question label {
+  display: inline-block;
+  margin-right: 1rem;
+  font-size: 1.1rem;
 }
 
 button {
-  padding: 0.5rem 1.5rem;
+  width: 100%;
+  padding: 0.5rem;
   font-size: 1rem;
-  border: none;
-  background-color: #0D47A1;
+  background-color: #0044cc;
   color: white;
+  border: none;
   border-radius: 4px;
   cursor: pointer;
-  margin-top: 1rem;
 }
 
 button:hover {
-  background-color: #1565C0;
+  background-color: #0033aa;
 }
 
-.ine-example img {
-  max-width: 100%;
-  margin-top: 1rem;
-  border: 2px solid #ccc;
-  border-radius: 4px;
-}
